@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Customize Theme — Custom White Label — Prototype</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<style>
+.icon{width:1em;height:1em;display:inline-block;vertical-align:-0.125em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+body{background:#F3F4F6;min-height:100vh;padding:24px;display:flex;flex-direction:column;align-items:center;gap:16px}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:999px}
+
+.frame{width:1920px;min-height:900px;background:#fff;border-radius:12px;border:1px solid #E5E7EB;overflow:hidden;display:flex;flex-direction:column;position:relative}
+
+.topbar{height:44px;background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.topbar-inner{max-width:1600px;width:100%;display:flex;align-items:center;padding:0 20px;gap:8px}
+.bc{display:flex;align-items:center;gap:5px;font-size:12px;color:#6B7280;flex:1}
+.bc a{color:#2563EB;text-decoration:none;cursor:pointer}
+.bc-sep{color:#D1D5DB;font-size:10px}
+.bc-cur{color:#111827;font-weight:500}
+.tb-right{display:flex;align-items:center;gap:8px}
+.ic-btn{width:30px;height:30px;border:1px solid #E5E7EB;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#fff;color:#6B7280;font-size:14px;position:relative}
+.notif-dot{position:absolute;top:5px;right:5px;width:6px;height:6px;background:#EF4444;border-radius:50%;border:1.5px solid #fff}
+
+.main{flex:1;display:flex;overflow:hidden;position:relative}
+.right-col{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;position:relative}
+.sidebar{width:52px;background:#fff;border-right:1px solid #E5E7EB;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;flex-shrink:0}
+.sb-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6B7280;font-size:18px}
+.sb-icon:hover{background:#F3F4F6;color:#111827}
+.sb-icon.on{background:#EFF6FF;color:#2563EB}
+
+.page{flex:1;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.page-inner{flex:1;overflow-y:auto;padding:20px 24px 100px;max-width:1600px;margin:0 auto;width:100%}
+
+.page-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.page-title{font-size:22px;font-weight:600;color:#111827}
+.btn-outline{height:32px;padding:0 14px;border-radius:999px;border:1px solid #E5E7EB;background:#fff;color:#374151;font-size:13px;cursor:pointer}
+
+/* EDITOR LAYOUT */
+.editor-grid{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:stretch}
+
+/* PREVIEW PANEL */
+.preview-panel{background:#fff;border:1px solid #E5E7EB;border-radius:12px;max-height:800px;display:flex;flex-direction:column;overflow:hidden}
+.preview-tabs{display:flex;border-bottom:1px solid #E5E7EB;padding:0 20px;flex-shrink:0}
+.preview-tab{padding:14px 4px;margin-right:24px;font-size:13px;font-weight:500;color:#6B7280;cursor:pointer;border-bottom:2px solid transparent;display:flex;align-items:center;gap:6px}
+.preview-tab.active{color:#111827;border-bottom-color:#2563EB}
+.preview-body{padding:32px;background:#F9FAFB;flex:1;min-height:0;overflow-y:auto}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* SETTINGS PANEL */
+.settings-panel{background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:0;max-height:800px;overflow-y:auto}
+.settings-hd{padding:16px 20px;border-bottom:1px solid #E5E7EB}
+.settings-hd-title{font-size:15px;font-weight:600;color:#111827}
+.settings-section{border:1px solid #E5E7EB;border-radius:24px;margin:0 16px 12px;overflow:hidden;background:#fff}
+.settings-section.first-acc{margin-top:24px}
+.settings-section:last-child{margin-bottom:16px}
+.acc-hd{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:15px 18px}
+.acc-hd .chev{color:#9CA3AF;font-size:15px;flex-shrink:0;transition:transform .15s;transform:rotate(180deg)}
+.acc-hd.closed .chev{transform:rotate(0deg)}
+.acc-body{display:block;padding:0 18px 18px}
+.acc-body.closed{display:none}
+.tab-scope{display:none}
+.tab-scope.tab-scope-visible{display:block}
+.field-row.tab-scope.tab-scope-visible{display:block}
+.section-title{font-size:14px;font-weight:600;color:#111827}
+.field-row{margin-bottom:14px}
+.field-row:last-child{margin-bottom:0}
+.field-lbl{font-size:12px;color:#6B7280;display:block;margin-bottom:6px}
+.color-field{display:flex;align-items:center;gap:8px}
+.color-swatch{width:32px;height:32px;border-radius:8px;border:1px solid #E5E7EB;cursor:pointer;padding:0;flex-shrink:0}
+.hex-input{flex:1;height:32px;border:1px solid #E5E7EB;border-radius:8px;padding:0 10px;font-size:13px;font-family:monospace;color:#111827}
+.hex-input:focus{outline:none;border-color:#2563EB}
+.helper-text{font-size:11px;color:#9CA3AF;margin-top:8px;line-height:1.5}
+.select-inp{width:100%;height:34px;border:1px solid #E5E7EB;border-radius:8px;padding:0 10px;font-size:13px;color:#111827;background:#fff}
+.radius-row{display:flex;align-items:center;gap:10px}
+.radius-row input[type=range]{flex:1}
+.radius-val{font-size:12px;color:#6B7280;width:40px;text-align:right;font-family:monospace}
+.manage-btn{width:100%;height:36px;border:1px solid #E5E7EB;border-radius:8px;background:#fff;color:#374151;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.manage-btn:hover{background:#F9FAFB}
+.thumb-row{display:flex;gap:8px;margin-bottom:10px}
+.thumb{flex:1;height:44px;border:1px solid #E5E7EB;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#9CA3AF;background:#F9FAFB}
+
+/* BOTTOM ACTION BAR */
+.bottom-bar{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #E5E7EB;padding:12px 24px;display:flex;justify-content:flex-end;align-items:center;gap:16px;z-index:5}
+.bottom-bar-inner{max-width:1600px;width:100%;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.link-btn{background:none;border:none;color:#EF4444;font-size:13px;cursor:pointer;padding:0}
+.btn-primary{height:36px;padding:0 18px;border-radius:999px;border:none;background:#2563EB;color:#fff;font-size:13px;font-weight:500;cursor:pointer}
+
+/* ===================== LIVE COMPONENTS SHOWCASE ===================== */
+.showcase-grid{display:flex;gap:16px;align-items:flex-start}
+.showcase-col{flex:1;display:flex;flex-direction:column;gap:16px;min-width:0}
+.showcase-grp{background:#fff;border:1px solid var(--color-neutral-200,#E5E7EB);border-radius:var(--radius-branded-component,10px);padding:18px 20px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.showcase-lbl{font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:.03em;margin-bottom:12px}
+.showcase-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.b-btn{height:38px;padding:0 18px;border-radius:var(--radius-branded-component,8px);font-size:13px;font-weight:500;cursor:pointer;border:none}
+.b-btn-primary{background:var(--color-brand-light-500);color:var(--color-brand-light-on-500)}
+.b-btn-secondary{background:var(--color-brand-light-100);color:var(--color-brand-light-800)}
+.b-btn-outline{background:#fff;border:1px solid var(--color-brand-light-500);color:var(--color-brand-light-700)}
+.b-btn-danger{background:var(--color-danger-500);color:var(--color-danger-on-500)}
+
+.b-badge{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;font-size:11px;font-weight:500}
+.b-badge-error{background:var(--color-error-100);color:var(--color-error-800)}
+.b-badge-success{background:var(--color-success-100);color:var(--color-success-800)}
+.b-badge-warning{background:var(--color-warning-100);color:var(--color-warning-800)}
+.b-badge-info{background:var(--color-info-100);color:var(--color-info-800)}
+
+.b-input{height:38px;width:240px;border-radius:var(--radius-branded-component,8px);border:1px solid var(--color-neutral-300);padding:0 12px;font-size:13px}
+.b-input:focus{outline:none;border-color:var(--color-focus-500);box-shadow:0 0 0 3px var(--color-focus-500-alpha-16)}
+
+.b-link{color:var(--color-link-600);font-size:13px;text-decoration:underline;cursor:pointer}
+
+.b-alert{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:var(--radius-branded-component,8px);font-size:12px;margin-bottom:8px}
+.b-alert:last-child{margin-bottom:0}
+.b-alert-error{background:var(--color-error-050);color:var(--color-error-800)}
+.b-alert-success{background:var(--color-success-050);color:var(--color-success-800)}
+.b-alert-warning{background:var(--color-warning-050);color:var(--color-warning-800)}
+.b-alert-info{background:var(--color-info-050);color:var(--color-info-800)}
+
+.b-swatchrow{display:flex;gap:4px}
+.b-swatch{width:32px;height:32px;border-radius:6px;flex-shrink:0}
+
+/* ===================== LIVE CHECKOUT THEME EXAMPLE ===================== */
+.chk-wrap{max-width:900px;margin:0 auto;display:flex;align-items:flex-start;gap:28px}
+.chk-col{flex:1;min-width:0;max-width:420px}
+.chk-divider{width:1px;align-self:stretch;background:var(--color-neutral-200)}
+.chk-lang{display:flex;justify-content:flex-end;margin-bottom:16px}
+.chk-lang select{height:30px;border-radius:999px;border:1px solid var(--color-neutral-200);padding:0 10px;font-size:12px;color:var(--color-neutral-700);background:#fff}
+.chk-card{background:#fff;border-radius:var(--radius-branded-component,12px);border:1px solid var(--color-neutral-200);padding:20px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.chk-brand-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.chk-brand{font-size:18px;font-weight:700;color:var(--color-neutral-900)}
+.chk-amt{font-size:20px;font-weight:600;color:var(--color-neutral-900)}
+.chk-hr{border:none;border-top:1px solid var(--color-neutral-200);margin:14px 0}
+.chk-cust-lbl{font-size:11px;color:var(--color-neutral-500);margin-bottom:2px}
+.chk-cust-name{font-size:13px;color:var(--color-neutral-900)}
+.chk-pay-hd{display:flex;align-items:center;font-size:14px;font-weight:600;color:var(--color-neutral-900)}
+.chk-form-lbl{font-size:12px;color:var(--color-neutral-700);display:block;margin:14px 0 6px}
+.chk-form-inp{width:100%;height:40px;border:1px solid var(--color-neutral-300);border-radius:var(--radius-branded-component,8px);padding:0 12px;font-size:13px;color:var(--color-neutral-900)}
+.chk-form-inp:focus{outline:none;border-color:var(--color-focus-500);box-shadow:0 0 0 3px var(--color-focus-500-alpha-16)}
+.chk-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chk-pay-btn{width:100%;height:44px;border-radius:var(--radius-branded-component,999px);border:none;background:var(--color-brand-light-500);color:var(--color-brand-light-on-500);font-size:14px;font-weight:600;cursor:pointer;margin-top:18px}
+.chk-secured{text-align:center;font-size:11px;color:var(--color-neutral-500);margin-top:12px}
+
+.chk-demo-label{font-size:10.5px;font-weight:700;color:var(--color-neutral-400);text-transform:uppercase;letter-spacing:.04em;margin:20px 0 8px 2px}
+.chk-form-inp.error{border-color:var(--color-danger-500);background:var(--color-danger-050)}
+.chk-form-inp.error:focus{border-color:var(--color-danger-500);box-shadow:0 0 0 3px var(--color-danger-500-alpha-16)}
+.chk-error-msg{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--color-danger-700);margin-top:6px}
+
+.chk-success-card{text-align:center}
+.chk-success-icon{width:48px;height:48px;border-radius:50%;background:var(--color-success-100);color:var(--color-success-700);display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.chk-success-title{font-size:16px;font-weight:700;color:var(--color-neutral-900);margin-bottom:6px}
+.chk-success-desc{font-size:12.5px;color:var(--color-neutral-500);line-height:1.5}
+.chk-success-row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--color-neutral-700);padding:4px 0;text-align:left}
+.chk-success-row span:last-child{color:var(--color-neutral-900);font-weight:600}
+.chk-mono{font-family:'SF Mono',Consolas,monospace;font-size:12px}
+
+/* ===================== SLIDEOUT: LOGO & FAVICON MANAGER ===================== */
+.slideout{position:absolute;top:0;right:0;width:100%;max-width:500px;height:100%;background:#fff;border-left:1px solid #E5E7EB;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;z-index:20;box-shadow:-8px 0 24px rgba(0,0,0,.06)}
+.slideout.open{transform:translateX(0)}
+.so-hd{padding:16px 20px;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between}
+.so-hd-title{font-size:14px;font-weight:600;color:#111827}
+.so-close{width:26px;height:26px;border-radius:8px;border:1px solid #E5E7EB;background:transparent;cursor:pointer;color:#6B7280;display:flex;align-items:center;justify-content:center}
+.so-body{flex:1;overflow-y:auto;padding:20px}
+.upload-grp{margin-bottom:24px}
+.upload-grp:last-child{margin-bottom:0}
+.upload-lbl{font-size:13px;font-weight:600;color:#111827;margin-bottom:4px}
+.upload-sub{font-size:11px;color:#9CA3AF;margin-bottom:10px}
+.upload-zone{border:2px dashed #D1D5DB;border-radius:10px;padding:24px 16px;text-align:center;cursor:pointer;background:#F9FAFB}
+.upload-zone:hover{border-color:#2563EB;background:#EFF6FF}
+.upload-zone i{font-size:22px;color:#2563EB;margin-bottom:6px;display:block}
+.upload-zone-text{font-size:12px;color:#374151;font-weight:500}
+.upload-meta{font-size:10px;color:#9CA3AF;margin-top:6px}
+.so-footer{padding:14px 20px;border-top:1px solid #E5E7EB;display:flex;justify-content:flex-end;gap:8px}
+
+
+/* ===== #mode-wl scoped versions of selectors that differ from checkout mode ===== */
+
+/* ===================== LIVE PAGE EXAMPLE (portal homepage — 1:1 with established layout) ===================== */
+.portal-mock{border:1px solid var(--color-neutral-200);border-radius:var(--radius-branded-component,12px);overflow:hidden;background:#fff;display:flex;min-height:600px}
+.portal-sb{width:48px;background:#fff;border-right:1px solid var(--color-neutral-200);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px;flex-shrink:0}
+.portal-sb-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--color-neutral-500);font-size:15px}
+.portal-sb-icon.on{background:var(--color-brand-light-500);color:var(--color-brand-light-on-500)}
+.portal-sb-foot{font-size:8px;color:var(--color-neutral-400);text-align:center;line-height:1.3;margin-top:6px}
+.portal-main{flex:1;display:flex;flex-direction:column;min-width:0}
+.portal-topbar{height:40px;border-bottom:1px solid var(--color-neutral-200);display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0}
+.portal-bc{font-size:11px;color:var(--color-neutral-500);display:flex;align-items:center;gap:5px}
+.portal-bc a{color:var(--color-link-600)}
+.portal-bc .cur{color:var(--color-neutral-800)}
+.portal-tb-icons{display:flex;align-items:center;gap:8px}
+.p-ic-btn{width:24px;height:24px;border-radius:50%;border:1px solid var(--color-neutral-200);display:flex;align-items:center;justify-content:center;color:var(--color-neutral-500);font-size:12px;position:relative}
+.p-notif-dot{position:absolute;top:-1px;right:-1px;width:5px;height:5px;background:var(--color-error-500);border-radius:50%;border:1px solid #fff}
+.portal-body{flex:1;overflow-y:auto;padding:18px 22px;background:var(--color-neutral-050)}
+.portal-greet{font-size:17px;font-weight:600;color:var(--color-neutral-900);margin-bottom:12px}
+.portal-search{display:flex;align-items:center;gap:8px;height:34px;border:1px solid var(--color-neutral-300);border-radius:var(--radius-branded-component,8px);padding:0 12px;background:#fff;margin-bottom:22px;max-width:420px}
+.portal-search i{color:var(--color-neutral-400);font-size:13px}
+.portal-search input{border:none;outline:none;font-size:12px;flex:1;background:transparent}
+.portal-sec-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.portal-sec-title{font-size:13px;font-weight:600;color:var(--color-neutral-900)}
+.portal-sec-sub{font-size:11px;color:var(--color-neutral-500);margin-top:2px}
+.portal-pill-group{display:flex;gap:6px}
+.p-pill{height:26px;padding:0 10px;border-radius:999px;border:1px solid var(--color-neutral-200);background:#fff;color:var(--color-neutral-600);font-size:11px;cursor:pointer}
+.p-pill.on{background:var(--color-brand-light-500);color:var(--color-brand-light-on-500);border-color:var(--color-brand-light-500)}
+.portal-kpi-row5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:26px}
+.portal-kpi2{background:#fff;border:1px solid var(--color-neutral-200);border-radius:var(--radius-branded-component,10px);padding:12px 14px;box-shadow:0 1px 2px rgba(0,0,0,.04);display:flex;align-items:stretch;gap:10px}
+.portal-kpi-bar{width:4px;border-radius:999px;background:var(--color-brand-light-500);align-self:center;height:65%;flex-shrink:0}
+.portal-kpi2.danger .portal-kpi-bar{background:var(--color-danger-500)}
+.portal-kpi-content{flex:1;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.portal-kpi-text{min-width:0}
+.portal-kpi-title2{font-size:11px;color:var(--color-neutral-500);margin-bottom:6px;white-space:nowrap}
+.p-chev{width:20px;height:20px;border-radius:50%;background:var(--color-brand-light-100);color:var(--color-brand-light-700);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.portal-kpi2.danger .p-chev{background:var(--color-danger-100);color:var(--color-danger-700)}
+.portal-kpi-value2{font-size:19px;font-weight:600;color:var(--color-neutral-900)}
+.portal-feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:26px}
+.portal-feat-card{background:#fff;border:1px solid var(--color-neutral-200);border-radius:var(--radius-branded-component,10px);padding:16px;text-align:center;display:flex;flex-direction:column;align-items:center;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.p-feat-icon{width:36px;height:36px;border-radius:var(--radius-branded-component,9px);display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:10px}
+.p-feat-title{font-size:12px;font-weight:600;color:var(--color-neutral-900);margin-bottom:6px}
+.p-feat-desc{font-size:10.5px;color:var(--color-neutral-500);line-height:1.5;margin-bottom:12px;flex:1}
+.p-feat-btns{display:flex;gap:6px}
+.p-feat-btn{height:26px;padding:0 10px;border-radius:var(--radius-branded-component,999px);border:none;background:var(--color-neutral-100);color:var(--color-neutral-700);font-size:10.5px;font-weight:500;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+
+/* ===== Mode switch control ===== */
+.proto-toolbar{width:1920px;max-width:100%;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.proto-desc{font-size:13px;color:#4B5563;line-height:1.5;max-width:800px}
+.proto-desc strong{color:#111827}
+.mode-switch{display:flex;background:#F3F4F6;border-radius:999px;padding:3px;gap:2px;flex-shrink:0}
+.mode-switch-btn{height:32px;padding:0 16px;border-radius:999px;border:none;background:transparent;color:#6B7280;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+.mode-switch-btn.active{background:#fff;color:#111827;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.mode-content{display:block}
+
+</style>
+</head>
+<body>
+<svg style="display:none" aria-hidden="true">
+<symbol id="i-alert-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="16.3" r="0.9" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-alert-triangle" viewBox="0 0 24 24"><path d="M12 3 L2.5 20 H21.5 Z"/><line x1="12" y1="9.5" x2="12" y2="14.5"/><circle cx="12" cy="17.3" r="0.9" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-arrow-left" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></symbol>
+<symbol id="i-arrow-right" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8.5a6 6 0 1 1 12 0c0 4 1.5 5 1.5 6.5h-15C4.5 13.5 6 12.5 6 8.5z"/><path d="M9.5 17.5a2.5 2.5 0 0 0 5 0"/></symbol>
+<symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="3" y1="12.5" x2="21" y2="12.5"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1"/><rect x="8" y="7" width="2" height="2" fill="currentColor" stroke="none"/><rect x="14" y="7" width="2" height="2" fill="currentColor" stroke="none"/><rect x="8" y="12" width="2" height="2" fill="currentColor" stroke="none"/><rect x="14" y="12" width="2" height="2" fill="currentColor" stroke="none"/><rect x="9.5" y="16.5" width="5" height="4.5" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-building-bank" viewBox="0 0 24 24"><path d="M3 10 L12 4 L21 10 Z"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="6" y1="10" x2="6" y2="19"/><line x1="10" y1="10" x2="10" y2="19"/><line x1="14" y1="10" x2="14" y2="19"/><line x1="18" y1="10" x2="18" y2="19"/><line x1="3" y1="20" x2="21" y2="20"/></symbol>
+<symbol id="i-chart-bar" viewBox="0 0 24 24"><line x1="4" y1="20" x2="4" y2="13"/><line x1="10" y1="20" x2="10" y2="8"/><line x1="16" y1="20" x2="16" y2="4"/><line x1="3" y1="20" x2="20" y2="20"/></symbol>
+<symbol id="i-chevron-right" viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></symbol>
+<symbol id="i-chevron-down" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+<symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="8 12.5 11 15.5 16 9"/></symbol>
+<symbol id="i-cloud-upload" viewBox="0 0 24 24"><path d="M7 18a4.5 4.5 0 0 1-1-8.9A5.5 5.5 0 0 1 16.8 8.2 4 4 0 0 1 16.5 16"/><line x1="12" y1="11" x2="12" y2="19"/><polyline points="9 14 12 11 15 14"/></symbol>
+<symbol id="i-credit-card" viewBox="0 0 24 24"><rect x="2.5" y="5.5" width="19" height="13" rx="2"/><line x1="2.5" y1="10" x2="21.5" y2="10"/></symbol>
+<symbol id="i-crown" viewBox="0 0 24 24"><path d="M3 8 L7 15 L12 6 L17 15 L21 8 L19 17 H5 Z"/></symbol>
+<symbol id="i-external-link" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><line x1="10" y1="14" x2="20" y2="4"/><polyline points="14 4 20 4 20 10"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M6 2.5h9l3 3v16H6z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="15" y2="14"/></symbol>
+<symbol id="i-gas-station" viewBox="0 0 24 24"><rect x="3" y="4" width="10" height="17" rx="1"/><line x1="3" y1="9" x2="13" y2="9"/><path d="M13 9h3l3 3v6a1.5 1.5 0 0 1-3 0v-2h-2"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11 L12 4 L20 11 V20 H4 Z"/><rect x="10" y="14" width="4" height="6" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-info-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.7" r="0.9" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-layout-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-layout-sidebar-left-collapse" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="10" y1="4" x2="10" y2="20"/><polyline points="7.5 9 5.5 12 7.5 15"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><line x1="5" y1="6" x2="19" y2="6"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="5" y1="18" x2="19" y2="18"/></symbol>
+<symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"/><line x1="21" y1="12" x2="10" y2="12"/><polyline points="17 8 21 12 17 16"/></symbol>
+<symbol id="i-message-circle" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 3.3 6.5L4 20l1.3-3.6A8 8 0 0 1 4 12z"/></symbol>
+<symbol id="i-receipt" viewBox="0 0 24 24"><path d="M5 3h14v18l-2-1.3L15 21l-2-1.3L11 21l-2-1.3L7 21l-2-1.3z"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.3" y1="15.3" x2="20.5" y2="20.5"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><line x1="12" y1="2.5" x2="12" y2="5.5"/><line x1="12" y1="18.5" x2="12" y2="21.5"/><line x1="2.5" y1="12" x2="5.5" y2="12"/><line x1="18.5" y1="12" x2="21.5" y2="12"/><line x1="5.1" y1="5.1" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="18.9" y2="18.9"/><line x1="5.1" y1="18.9" x2="7.2" y2="16.8"/><line x1="16.8" y1="7.2" x2="18.9" y2="5.1"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 L20 6 V12 C20 17 16.5 20 12 21 C7.5 20 4 17 4 12 V6 Z"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3 L14.8 9 L21 9.8 L16.5 14 L17.6 20.2 L12 17 L6.4 20.2 L7.5 14 L3 9.8 L9.2 9 Z"/></symbol>
+<symbol id="i-trending-up" viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="15 6 21 6 21 12"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><line x1="12" y1="3" x2="12" y2="15"/><polyline points="8 7 12 3 16 7"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3.2 2.7-5 6-5s6 1.8 6 5"/><path d="M15.5 6.5a3 3 0 0 1 0 5.8"/><path d="M17 14c2.5.3 4 1.8 4 5"/></symbol>
+<symbol id="i-users-group" viewBox="0 0 24 24"><circle cx="8" cy="8" r="2.8"/><circle cx="16" cy="8" r="2.8"/><path d="M2.5 19c0-2.8 2.4-4.3 5.5-4.3s5.5 1.5 5.5 4.3"/><path d="M10.5 19c0-2.8 2.4-4.3 5.5-4.3s5.5 1.5 5.5 4.3"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></symbol>
+</svg>
+
+
+<div class="proto-toolbar">
+  <div class="proto-desc"><strong>Prototype preview.</strong> This is the same White-Label Theme Customizer shown against two different contexts — a full product/portal page and a hosted checkout page — so you can see how one set of brand tokens carries across both. Use the toggle to switch between them.</div>
+  <div class="mode-switch">
+    <button class="mode-switch-btn active" data-mode="wl" onclick="switchMode('wl')">Whitelabel Example</button>
+    <button class="mode-switch-btn" data-mode="ck" onclick="switchMode('ck')">Checkout Theme Example</button>
+  </div>
+</div>
+
+<div class="frame">
+  <div class="main">
+    <div class="sidebar">
+      <div class="sb-icon"><svg class="icon"><use href="#i-home"/></svg></div>
+      <div class="sb-icon"><svg class="icon"><use href="#i-info-circle"/></svg></div>
+      <div class="sb-icon on"><svg class="icon"><use href="#i-settings"/></svg></div>
+      <div class="sb-icon"><svg class="icon"><use href="#i-shield"/></svg></div>
+      <div class="sb-icon"><svg class="icon"><use href="#i-star"/></svg></div>
+      <div style="flex:1"></div>
+      <div class="sb-icon"><svg class="icon"><use href="#i-logout"/></svg></div>
+    </div>
+
+    <div class="right-col">
+      <div class="topbar">
+        <div class="topbar-inner">
+          <div class="bc">
+            <a>Home</a><span class="bc-sep"><svg class="icon"><use href="#i-chevron-right"/></svg></span>
+            <a>Administration</a><span class="bc-sep"><svg class="icon"><use href="#i-chevron-right"/></svg></span>
+            <a>Checkout Themes</a><span class="bc-sep"><svg class="icon"><use href="#i-chevron-right"/></svg></span>
+            <a>NorthPeak Financial</a><span class="bc-sep"><svg class="icon"><use href="#i-chevron-right"/></svg></span>
+            <span class="bc-cur">Customize theme</span>
+          </div>
+          <div class="tb-right">
+            <div class="ic-btn"><svg class="icon"><use href="#i-message-circle"/></svg></div>
+            <div class="ic-btn"><svg class="icon"><use href="#i-bell"/></svg><div class="notif-dot"></div></div>
+            <div class="ic-btn" style="background:#2563EB;color:#fff;border:none;font-size:12px;font-weight:600">WP</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page">
+        <div class="page-inner">
+          <div class="page-hd">
+            <span class="page-title">Customize theme — NorthPeak Financial</span>
+            <button class="btn-outline"><svg class="icon" style="font-size:12px;margin-right:4px"><use href="#i-arrow-left"/></svg> Return to theme page</button>
+          </div>
+
+          <div id="mode-wl" class="mode-content">
+<div class="editor-grid">
+
+            <div class="preview-panel">
+              <div class="preview-tabs">
+                <div class="preview-tab active" data-tab="components"><svg class="icon" style="font-size:14px"><use href="#i-layout-grid"/></svg> Live Components</div>
+                <div class="preview-tab" data-tab="page"><svg class="icon" style="font-size:14px"><use href="#i-file"/></svg> Live Page Example</div>
+              </div>
+
+              <div class="preview-body">
+                <div id="wl-brand-preview-root" data-brand="northpeak-financial">
+
+                  <div class="tab-content active" id="wl-tab-components">
+                    <div class="showcase-grid">
+                    <div class="showcase-col">
+
+                    <div class="showcase-grp">
+                      <div class="showcase-lbl">Buttons</div>
+                      <div class="showcase-row">
+                        <button class="b-btn b-btn-primary">Primary action</button>
+                        <button class="b-btn b-btn-secondary">Secondary action</button>
+                        <button class="b-btn b-btn-outline">Outline action</button>
+                        <button class="b-btn b-btn-danger">Delete</button>
+                      </div>
+                    </div>
+
+                    <div class="showcase-grp">
+                      <div class="showcase-lbl">Input &amp; link</div>
+                      <div class="showcase-row">
+                        <input class="b-input" placeholder="Focus me to preview the focus ring">
+                        <span class="b-link">This is a link</span>
+                      </div>
+                    </div>
+
+                    <div class="showcase-grp">
+                      <div class="showcase-lbl">Brand ramp — brand-light</div>
+                      <div class="b-swatchrow">
+                        <div class="b-swatch" style="background:var(--color-brand-light-100)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-light-300)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-light-500)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-light-700)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-light-900)"></div>
+                      </div>
+                    </div>
+
+                    </div>
+                    <div class="showcase-col">
+
+                    <div class="showcase-grp">
+                      <div class="showcase-lbl">Badges</div>
+                      <div class="showcase-row">
+                        <span class="b-badge b-badge-error">Error</span>
+                        <span class="b-badge b-badge-success">Success</span>
+                        <span class="b-badge b-badge-warning">Warning</span>
+                        <span class="b-badge b-badge-info">Info</span>
+                      </div>
+                    </div>
+
+                    <div class="showcase-grp">
+                      <div class="showcase-lbl">Alerts</div>
+                      <div class="b-alert b-alert-error"><svg class="icon" style="font-size:14px"><use href="#i-alert-circle"/></svg> Something went wrong. Try again.</div>
+                      <div class="b-alert b-alert-success"><svg class="icon" style="font-size:14px"><use href="#i-circle-check"/></svg> Payment completed successfully.</div>
+                      <div class="b-alert b-alert-warning"><svg class="icon" style="font-size:14px"><use href="#i-alert-triangle"/></svg> Your session will expire soon.</div>
+                      <div class="b-alert b-alert-info"><svg class="icon" style="font-size:14px"><use href="#i-info-circle"/></svg> A new update is available.</div>
+                    </div>
+
+                    <div class="showcase-grp">
+                      <div class="showcase-lbl">Brand ramp — brand-dark</div>
+                      <div class="b-swatchrow">
+                        <div class="b-swatch" style="background:var(--color-brand-dark-100)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-dark-300)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-dark-500)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-dark-700)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-dark-900)"></div>
+                      </div>
+                    </div>
+
+                    </div>
+                    </div>
+                  </div>
+
+                  <div class="tab-content" id="wl-tab-page">
+                    <div class="portal-mock">
+                      <div class="portal-sb">
+                        <div class="portal-sb-icon"><svg class="icon"><use href="#i-layout-sidebar-left-collapse"/></svg></div>
+                        <div class="portal-sb-icon on"><svg class="icon"><use href="#i-home"/></svg></div>
+                        <div class="portal-sb-icon"><svg class="icon"><use href="#i-info-circle"/></svg></div>
+                        <div class="portal-sb-icon"><svg class="icon"><use href="#i-receipt"/></svg></div>
+                        <div class="portal-sb-icon"><svg class="icon"><use href="#i-list"/></svg></div>
+                        <div class="portal-sb-icon"><svg class="icon"><use href="#i-settings"/></svg></div>
+                        <div class="portal-sb-icon"><svg class="icon"><use href="#i-building"/></svg></div>
+                        <div class="portal-sb-icon"><svg class="icon"><use href="#i-star"/></svg></div>
+                        <div style="flex:1"></div>
+                        <div class="portal-sb-icon"><svg class="icon"><use href="#i-logout"/></svg></div>
+                        <div class="portal-sb-foot">© 2026<br>NorthPeak</div>
+                      </div>
+
+                      <div class="portal-main">
+                        <div class="portal-topbar">
+                          <div class="portal-bc"><a>Portal</a><span>/</span><span class="cur">Home</span></div>
+                          <div class="portal-tb-icons">
+                            <div class="p-ic-btn"><svg class="icon"><use href="#i-message-circle"/></svg></div>
+                            <div class="p-ic-btn"><svg class="icon"><use href="#i-bell"/></svg><div class="p-notif-dot"></div></div>
+                            <div class="p-ic-btn"><svg class="icon"><use href="#i-user"/></svg></div>
+                          </div>
+                        </div>
+
+                        <div class="portal-body">
+                          <h2 class="portal-greet">Good Morning, John</h2>
+                          <div class="portal-search"><svg class="icon"><use href="#i-search"/></svg><input placeholder="Search tools and portals..."></div>
+
+                          <div class="portal-sec-hd">
+                            <div>
+                              <div class="portal-sec-title">Transactions &amp; Reporting</div>
+                              <div class="portal-sec-sub">Native transaction data and financial reporting tools</div>
+                            </div>
+                            <div class="portal-pill-group">
+                              <button class="p-pill on">Last 24 Hours</button>
+                              <button class="p-pill">Last 7 Days</button>
+                              <button class="p-pill">Last 30 Days</button>
+                            </div>
+                          </div>
+
+                          <div class="portal-kpi-row5">
+                            <div class="portal-kpi2">
+                              <div class="portal-kpi-bar"></div>
+                              <div class="portal-kpi-content">
+                                <div class="portal-kpi-text"><div class="portal-kpi-title2">Active Sites</div><div class="portal-kpi-value2">62.5K</div></div><div class="p-chev"><svg class="icon"><use href="#i-chevron-right"/></svg></div>
+                              </div>
+                            </div>
+                            <div class="portal-kpi2">
+                              <div class="portal-kpi-bar"></div>
+                              <div class="portal-kpi-content">
+                                <div class="portal-kpi-text"><div class="portal-kpi-title2">Total Sale Transactions</div><div class="portal-kpi-value2">4.0K</div></div><div class="p-chev"><svg class="icon"><use href="#i-chevron-right"/></svg></div>
+                              </div>
+                            </div>
+                            <div class="portal-kpi2">
+                              <div class="portal-kpi-bar"></div>
+                              <div class="portal-kpi-content">
+                                <div class="portal-kpi-text"><div class="portal-kpi-title2">Total Auth. Transactions</div><div class="portal-kpi-value2">2.7K</div></div><div class="p-chev"><svg class="icon"><use href="#i-chevron-right"/></svg></div>
+                              </div>
+                            </div>
+                            <div class="portal-kpi2 danger">
+                              <div class="portal-kpi-bar"></div>
+                              <div class="portal-kpi-content">
+                                <div class="portal-kpi-text"><div class="portal-kpi-title2">Failed Transactions</div><div class="portal-kpi-value2">502</div></div><div class="p-chev"><svg class="icon"><use href="#i-chevron-right"/></svg></div>
+                              </div>
+                            </div>
+                            <div class="portal-kpi2">
+                              <div class="portal-kpi-bar"></div>
+                              <div class="portal-kpi-content">
+                                <div class="portal-kpi-text"><div class="portal-kpi-title2">Refunded Transactions</div><div class="portal-kpi-value2">232</div></div><div class="p-chev"><svg class="icon"><use href="#i-chevron-right"/></svg></div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="portal-sec-hd">
+                            <div>
+                              <div class="portal-sec-title">Native Tools (Features)</div>
+                              <div class="portal-sec-sub">Core tools and capabilities built natively within Verifone Central</div>
+                            </div>
+                          </div>
+
+                          <div class="portal-feat-grid">
+                            <div class="portal-feat-card">
+                              <div class="p-feat-icon" style="background:#EDE9FE;color:#7C3AED"><svg class="icon"><use href="#i-users"/></svg></div>
+                              <div class="p-feat-title">Administration</div>
+                              <div class="p-feat-desc">Provides merchants with tools to review and manage details related to their organizations: users, points of interaction, digital wallets, blocking rulesets, notifications, webhooks and more</div>
+                              <div class="p-feat-btns"><button class="p-feat-btn">Manage Users</button></div>
+                            </div>
+                            <div class="portal-feat-card">
+                              <div class="p-feat-icon" style="background:#FCE7F3;color:#DB2777"><svg class="icon"><use href="#i-chart-bar"/></svg></div>
+                              <div class="p-feat-title">Advanced Reporting</div>
+                              <div class="p-feat-desc">BI tool embedded in Verifone Central for advanced analytics and business intelligence. Planned as a future enhancement</div>
+                              <div class="p-feat-btns"><button class="p-feat-btn">Open Reports</button></div>
+                            </div>
+                            <div class="portal-feat-card">
+                              <div class="p-feat-icon" style="background:#D1FAE5;color:#059669"><svg class="icon"><use href="#i-briefcase"/></svg></div>
+                              <div class="p-feat-title">Boarding &amp; Compliance</div>
+                              <div class="p-feat-desc">Merchant onboarding portal used by Sales Representatives to onboard new prospects through AML/KYC checks. Once approved, merchants are boarded into the Common Portal</div>
+                              <div class="p-feat-btns"><button class="p-feat-btn">New Application</button></div>
+                            </div>
+                            <div class="portal-feat-card">
+                              <div class="p-feat-icon" style="background:#EDE9FE;color:#7C3AED"><svg class="icon"><use href="#i-building-bank"/></svg></div>
+                              <div class="p-feat-title">FinOps</div>
+                              <div class="p-feat-desc">Available for internal users. The place from where the accounting team makes payments to merchants in the context of the Verifone Acquiring Platform. Settlements and financial operations</div>
+                              <div class="p-feat-btns"><button class="p-feat-btn">View Settlements</button></div>
+                            </div>
+                            <div class="portal-feat-card">
+                              <div class="p-feat-icon" style="background:#DBEAFE;color:#2563EB"><svg class="icon"><use href="#i-credit-card"/></svg></div>
+                              <div class="p-feat-title">Payment Tools</div>
+                              <div class="p-feat-desc">Ecom payment tools available via UI and also via API: Payment Link &amp; Virtual Terminal</div>
+                              <div class="p-feat-btns"><button class="p-feat-btn">Pay by Link</button><button class="p-feat-btn">Virtual Terminal</button></div>
+                            </div>
+                            <div class="portal-feat-card">
+                              <div class="p-feat-icon" style="background:#DBEAFE;color:#2563EB"><svg class="icon"><use href="#i-gas-station"/></svg></div>
+                              <div class="p-feat-title">Petro</div>
+                              <div class="p-feat-desc">Focuses on hardware and software in and around gas stations. Using Petro Cloud, clients can manage fuel levels, product pricing, cameras and more. Integrated into Verifone Central via RMS</div>
+                              <div class="p-feat-btns"><button class="p-feat-btn">Open Petro</button></div>
+                            </div>
+                            <div class="portal-feat-card">
+                              <div class="p-feat-icon" style="background:#D1FAE5;color:#059669"><svg class="icon"><use href="#i-trending-up"/></svg></div>
+                              <div class="p-feat-title">Transactions &amp; Reporting</div>
+                              <div class="p-feat-desc">Native transaction data and financial reporting tools for monitoring payment activity within the platform</div>
+                              <div class="p-feat-btns"><button class="p-feat-btn">Search Transactions</button></div>
+                            </div>
+                          </div>
+
+                          <div class="portal-sec-hd">
+                            <div>
+                              <div class="portal-sec-title">SSO-Enabled Applications</div>
+                              <div class="portal-sec-sub">External Verifone portals and applications accessible via SSO integration</div>
+                            </div>
+                          </div>
+
+                          <div class="portal-feat-grid">
+                            <div class="portal-feat-card">
+                              <div class="p-feat-icon" style="background:#EDE9FE;color:#7C3AED"><svg class="icon"><use href="#i-crown"/></svg></div>
+                              <div class="p-feat-title">Premier Portal</div>
+                              <div class="p-feat-desc">Specialized business portal accessible via SSO integration</div>
+                              <div class="p-feat-btns"><button class="p-feat-btn"><svg class="icon" style="font-size:10px"><use href="#i-external-link"/></svg>Open Portal</button></div>
+                            </div>
+                            <div class="portal-feat-card">
+                              <div class="p-feat-icon" style="background:#D1FAE5;color:#059669"><svg class="icon"><use href="#i-arrow-right"/></svg></div>
+                              <div class="p-feat-title">Sales Connector</div>
+                              <div class="p-feat-desc">Sales tooling integrated via SSO for streamlined access within the platform. Planned as a future enhancement</div>
+                              <div class="p-feat-btns"><button class="p-feat-btn"><svg class="icon" style="font-size:10px"><use href="#i-external-link"/></svg>Open Connector</button></div>
+                            </div>
+                            <div class="portal-feat-card">
+                              <div class="p-feat-icon" style="background:#FCE7F3;color:#DB2777"><svg class="icon"><use href="#i-users-group"/></svg></div>
+                              <div class="p-feat-title">VHQ 2.0</div>
+                              <div class="p-feat-desc">Verifone HQ: one of Verifone's oldest systems, used to manage and administer all Terminals. Enabled remote software and payment method updates on devices</div>
+                              <div class="p-feat-btns"><button class="p-feat-btn"><svg class="icon" style="font-size:10px"><use href="#i-external-link"/></svg>Open VHQ</button></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-panel">
+              <div class="settings-hd">
+                <span class="settings-hd-title">NorthPeak Financial</span>
+              </div>
+
+              <div class="settings-section first-acc">
+                <div class="acc-hd" onclick="toggleAccSection(this)">
+                  <span class="section-title" style="margin-bottom:0">Brand colors</span>
+                  <svg class="icon chev"><use href="#i-chevron-down"/></svg>
+                </div>
+                <div class="acc-body">
+                <div class="field-row">
+                  <span class="field-lbl">Brand light</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="wl-c-brand-light" value="#7c3aed">
+                    <input type="text" class="hex-input brand-input" id="wl-c-brand-light-hex" value="#7C3AED">
+                  </div>
+                </div>
+                <div class="field-row">
+                  <span class="field-lbl">Brand dark</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="wl-c-brand-dark" value="#1e1b4b">
+                    <input type="text" class="hex-input brand-input" id="wl-c-brand-dark-hex" value="#1E1B4B">
+                  </div>
+                </div>
+                </div>
+              </div>
+
+              <div class="settings-section">
+                <div class="acc-hd closed" onclick="toggleAccSection(this)">
+                  <span class="section-title" style="margin-bottom:0">Semantic colors</span>
+                  <svg class="icon chev"><use href="#i-chevron-down"/></svg>
+                </div>
+                <div class="acc-body closed">
+                <div class="field-row">
+                  <span class="field-lbl">Success</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="wl-c-success" value="#16a34a">
+                    <input type="text" class="hex-input brand-input" id="wl-c-success-hex" value="#16A34A">
+                  </div>
+                </div>
+                <div class="field-row">
+                  <span class="field-lbl">Warning</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="wl-c-warning" value="#d97706">
+                    <input type="text" class="hex-input brand-input" id="wl-c-warning-hex" value="#D97706">
+                  </div>
+                </div>
+                <div class="field-row">
+                  <span class="field-lbl">Danger</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="wl-c-danger" value="#b91c1c">
+                    <input type="text" class="hex-input brand-input" id="wl-c-danger-hex" value="#B91C1C">
+                  </div>
+                </div>
+                <div class="field-row">
+                  <span class="field-lbl">Info</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="wl-c-info" value="#0ea5e9">
+                    <input type="text" class="hex-input brand-input" id="wl-c-info-hex" value="#0EA5E9">
+                  </div>
+                </div>
+                <div class="helper-text">Error, neutral, link and focus colors use Verifone's default palette. Contact support to request custom values for those roles.</div>
+                </div>
+              </div>
+
+              <div class="settings-section">
+                <div class="acc-hd closed" onclick="toggleAccSection(this)">
+                  <span class="section-title" style="margin-bottom:0">Typography</span>
+                  <svg class="icon chev"><use href="#i-chevron-down"/></svg>
+                </div>
+                <div class="acc-body closed">
+                <div class="field-row">
+                  <span class="field-lbl">Font family</span>
+                  <select class="select-inp brand-input" id="wl-c-font">
+                    <option>Inter</option>
+                    <option>Roboto</option>
+                    <option>Helvetica Neue</option>
+                    <option>System default</option>
+                  </select>
+                </div>
+                <div class="helper-text">Typography inherits from the Verifone Central foundation by design — this preview-only override isn't written to the brand token stylesheet.</div>
+                </div>
+              </div>
+
+              <div class="settings-section">
+                <div class="acc-hd closed" onclick="toggleAccSection(this)">
+                  <span class="section-title" style="margin-bottom:0">Shape</span>
+                  <svg class="icon chev"><use href="#i-chevron-down"/></svg>
+                </div>
+                <div class="acc-body closed">
+                <div class="field-row">
+                  <span class="field-lbl">Component radius</span>
+                  <div class="radius-row">
+                    <input type="range" min="0" max="24" value="8" id="wl-c-radius" class="brand-input">
+                    <span class="radius-val" id="wl-c-radius-val">8px</span>
+                  </div>
+                </div>
+                <div class="helper-text">Maps to <code>--radius-branded-component</code> (and its focus-ring variant) in the generated stylesheet.</div>
+                </div>
+              </div>
+
+              <div class="settings-section">
+                <div class="acc-hd closed" onclick="toggleAccSection(this)">
+                  <span class="section-title" style="margin-bottom:0">Logo &amp; favicon</span>
+                  <svg class="icon chev"><use href="#i-chevron-down"/></svg>
+                </div>
+                <div class="acc-body closed">
+                <div class="thumb-row">
+                  <div class="thumb">Light logo</div>
+                  <div class="thumb">Dark logo</div>
+                </div>
+                <button class="manage-btn" onclick="openLogoSlideoutWL()"><svg class="icon" style="font-size:13px"><use href="#i-upload"/></svg> Manage logos &amp; favicons</button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+</div>
+<div id="mode-ck" class="mode-content" style="display:none">
+<div class="editor-grid">
+
+            <div class="preview-panel">
+              <div class="preview-tabs">
+                <div class="preview-tab active" data-tab="components"><svg class="icon" style="font-size:14px"><use href="#i-layout-grid"/></svg> Live Components</div>
+                <div class="preview-tab" data-tab="page"><svg class="icon" style="font-size:14px"><use href="#i-file"/></svg> Live Checkout Theme Example</div>
+              </div>
+
+              <div class="preview-body">
+                <div id="ck-brand-preview-root" data-brand="northpeak-financial">
+
+                  <div class="tab-content active" id="ck-tab-components">
+                    <div class="showcase-grid">
+                    <div class="showcase-col">
+
+                    <div class="showcase-grp">
+                      <div class="showcase-lbl">Buttons</div>
+                      <div class="showcase-row">
+                        <button class="b-btn b-btn-primary">Primary action</button>
+                        <button class="b-btn b-btn-secondary">Secondary action</button>
+                        <button class="b-btn b-btn-outline">Outline action</button>
+                        <button class="b-btn b-btn-danger">Delete</button>
+                      </div>
+                    </div>
+
+                    <div class="showcase-grp">
+                      <div class="showcase-lbl">Input &amp; link</div>
+                      <div class="showcase-row">
+                        <input class="b-input" placeholder="Focus me to preview the focus ring">
+                        <span class="b-link">This is a link</span>
+                      </div>
+                    </div>
+
+                    <div class="showcase-grp">
+                      <div class="showcase-lbl">Brand ramp — brand-light</div>
+                      <div class="b-swatchrow">
+                        <div class="b-swatch" style="background:var(--color-brand-light-100)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-light-300)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-light-500)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-light-700)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-light-900)"></div>
+                      </div>
+                    </div>
+
+                    </div>
+                    <div class="showcase-col">
+
+                    <div class="showcase-grp">
+                      <div class="showcase-lbl">Badges</div>
+                      <div class="showcase-row">
+                        <span class="b-badge b-badge-error">Error</span>
+                        <span class="b-badge b-badge-success">Success</span>
+                        <span class="b-badge b-badge-warning">Warning</span>
+                        <span class="b-badge b-badge-info">Info</span>
+                      </div>
+                    </div>
+
+                    <div class="showcase-grp">
+                      <div class="showcase-lbl">Alerts</div>
+                      <div class="b-alert b-alert-error"><svg class="icon" style="font-size:14px"><use href="#i-alert-circle"/></svg> Something went wrong. Try again.</div>
+                      <div class="b-alert b-alert-success"><svg class="icon" style="font-size:14px"><use href="#i-circle-check"/></svg> Payment completed successfully.</div>
+                      <div class="b-alert b-alert-warning"><svg class="icon" style="font-size:14px"><use href="#i-alert-triangle"/></svg> Your session will expire soon.</div>
+                      <div class="b-alert b-alert-info"><svg class="icon" style="font-size:14px"><use href="#i-info-circle"/></svg> A new update is available.</div>
+                    </div>
+
+                    <div class="showcase-grp">
+                      <div class="showcase-lbl">Brand ramp — brand-dark</div>
+                      <div class="b-swatchrow">
+                        <div class="b-swatch" style="background:var(--color-brand-dark-100)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-dark-300)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-dark-500)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-dark-700)"></div>
+                        <div class="b-swatch" style="background:var(--color-brand-dark-900)"></div>
+                      </div>
+                    </div>
+
+                    </div>
+                    </div>
+                  </div>
+
+                  <div class="tab-content" id="ck-tab-page">
+                    <div class="chk-wrap">
+                      <div class="chk-col">
+                        <div class="chk-demo-label" style="margin-top:0">Sample checkout theme</div>
+                        <div class="chk-lang"><select><option>English (US)</option></select></div>
+                        <div class="chk-card">
+                          <div class="chk-brand-row">
+                            <span class="chk-brand">NorthPeak Financial</span>
+                            <span class="chk-amt">$137.00</span>
+                          </div>
+                          <hr class="chk-hr">
+                          <div class="chk-cust-lbl">Customer</div>
+                          <div class="chk-cust-name">Peter Pan</div>
+                        </div>
+
+                        <div class="chk-demo-label">Validation error example</div>
+                        <div class="chk-card">
+                          <span class="chk-pay-hd"><svg class="icon" style="margin-right:6px"><use href="#i-credit-card"/></svg>Pay with card</span>
+                          <label class="chk-form-lbl">Card number</label>
+                          <input class="chk-form-inp error" value="4242 4242 4242">
+                          <div class="chk-error-msg"><svg class="icon" style="font-size:13px"><use href="#i-alert-circle"/></svg>Enter a valid 16-digit card number</div>
+                          <div class="chk-row2">
+                            <div>
+                              <label class="chk-form-lbl">Expiration date</label>
+                              <input class="chk-form-inp" placeholder="MM/YY">
+                            </div>
+                            <div>
+                              <label class="chk-form-lbl">CVV</label>
+                              <input class="chk-form-inp" placeholder="CVV">
+                            </div>
+                          </div>
+                          <button class="chk-pay-btn">Pay $137.00</button>
+                          <div class="chk-secured">Secured payments provided by Verifone</div>
+                        </div>
+                      </div>
+
+                      <div class="chk-divider"></div>
+
+                      <div class="chk-col">
+                        <div class="chk-demo-label" style="margin-top:0">Payment confirmation example</div>
+                        <div class="chk-card chk-success-card">
+                          <div class="chk-success-icon"><svg class="icon" style="font-size:22px"><use href="#i-circle-check"/></svg></div>
+                          <div class="chk-success-title">Payment successful</div>
+                          <div class="chk-success-desc">$137.00 was charged to your card. A receipt has been sent to your email.</div>
+                          <hr class="chk-hr">
+                          <div class="chk-success-row"><span>Customer</span><span>Peter Pan</span></div>
+                          <div class="chk-success-row"><span>Reference</span><span class="chk-mono">PMT-7F2A91</span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-panel">
+              <div class="settings-hd">
+                <span class="settings-hd-title">NorthPeak Financial</span>
+              </div>
+
+              <div class="settings-section first-acc">
+                <div class="acc-hd" onclick="toggleAccSection(this)">
+                  <span class="section-title" style="margin-bottom:0">Brand colors</span>
+                  <svg class="icon chev"><use href="#i-chevron-down"/></svg>
+                </div>
+                <div class="acc-body">
+                <div class="field-row">
+                  <span class="field-lbl">Brand light</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="ck-c-brand-light" value="#7c3aed">
+                    <input type="text" class="hex-input brand-input" id="ck-c-brand-light-hex" value="#7C3AED">
+                  </div>
+                </div>
+                <div class="field-row">
+                  <span class="field-lbl">Brand dark</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="ck-c-brand-dark" value="#1e1b4b">
+                    <input type="text" class="hex-input brand-input" id="ck-c-brand-dark-hex" value="#1E1B4B">
+                  </div>
+                </div>
+                </div>
+              </div>
+
+              <div class="settings-section tab-scope" data-scope="page">
+                <div class="acc-hd closed" onclick="toggleAccSection(this)">
+                  <span class="section-title" style="margin-bottom:0">Checkout background</span>
+                  <svg class="icon chev"><use href="#i-chevron-down"/></svg>
+                </div>
+                <div class="acc-body closed">
+                <div class="field-row">
+                  <span class="field-lbl">Page background</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch" id="ck-c-checkout-bg" value="#f9fafb">
+                    <input type="text" class="hex-input" id="ck-c-checkout-bg-hex" value="#F9FAFB">
+                  </div>
+                </div>
+                <div class="helper-text">Applies to the checkout page background only, behind the payment card — not the surrounding product chrome.</div>
+                </div>
+              </div>
+
+              <div class="settings-section">
+                <div class="acc-hd closed" onclick="toggleAccSection(this)">
+                  <span class="section-title" style="margin-bottom:0">Semantic colors</span>
+                  <svg class="icon chev"><use href="#i-chevron-down"/></svg>
+                </div>
+                <div class="acc-body closed">
+                <div class="field-row">
+                  <span class="field-lbl">Success</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="ck-c-success" value="#16a34a">
+                    <input type="text" class="hex-input brand-input" id="ck-c-success-hex" value="#16A34A">
+                  </div>
+                </div>
+                <div class="field-row tab-scope" data-scope="components">
+                  <span class="field-lbl">Warning</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="ck-c-warning" value="#d97706">
+                    <input type="text" class="hex-input brand-input" id="ck-c-warning-hex" value="#D97706">
+                  </div>
+                </div>
+                <div class="field-row">
+                  <span class="field-lbl">Danger</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="ck-c-danger" value="#b91c1c">
+                    <input type="text" class="hex-input brand-input" id="ck-c-danger-hex" value="#B91C1C">
+                  </div>
+                </div>
+                <div class="field-row tab-scope" data-scope="components">
+                  <span class="field-lbl">Info</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="ck-c-info" value="#0ea5e9">
+                    <input type="text" class="hex-input brand-input" id="ck-c-info-hex" value="#0EA5E9">
+                  </div>
+                </div>
+                <div class="helper-text">Error, neutral, link and focus colors use Verifone's default palette. Contact support to request custom values for those roles.</div>
+                </div>
+              </div>
+
+              <div class="settings-section">
+                <div class="acc-hd closed" onclick="toggleAccSection(this)">
+                  <span class="section-title" style="margin-bottom:0">Typography</span>
+                  <svg class="icon chev"><use href="#i-chevron-down"/></svg>
+                </div>
+                <div class="acc-body closed">
+                <div class="field-row">
+                  <span class="field-lbl">Font family</span>
+                  <select class="select-inp brand-input" id="ck-c-font">
+                    <option>Inter</option>
+                    <option>Roboto</option>
+                    <option>Helvetica Neue</option>
+                    <option>System default</option>
+                  </select>
+                </div>
+                <div class="helper-text">Typography inherits from the Verifone Central foundation by design — this preview-only override isn't written to the brand token stylesheet.</div>
+                </div>
+              </div>
+
+              <div class="settings-section">
+                <div class="acc-hd closed" onclick="toggleAccSection(this)">
+                  <span class="section-title" style="margin-bottom:0">Shape</span>
+                  <svg class="icon chev"><use href="#i-chevron-down"/></svg>
+                </div>
+                <div class="acc-body closed">
+                <div class="field-row">
+                  <span class="field-lbl">Component radius</span>
+                  <div class="radius-row">
+                    <input type="range" min="0" max="24" value="8" id="ck-c-radius" class="brand-input">
+                    <span class="radius-val" id="ck-c-radius-val">8px</span>
+                  </div>
+                </div>
+                <div class="helper-text">Maps to <code>--radius-branded-component</code> (and its focus-ring variant) in the generated stylesheet.</div>
+                </div>
+              </div>
+
+              <div class="settings-section">
+                <div class="acc-hd closed" onclick="toggleAccSection(this)">
+                  <span class="section-title" style="margin-bottom:0">Logo &amp; favicon</span>
+                  <svg class="icon chev"><use href="#i-chevron-down"/></svg>
+                </div>
+                <div class="acc-body closed">
+                <div class="thumb-row">
+                  <div class="thumb">Light logo</div>
+                  <div class="thumb">Dark logo</div>
+                </div>
+                <button class="manage-btn" onclick="openLogoSlideoutCK()"><svg class="icon" style="font-size:13px"><use href="#i-upload"/></svg> Manage logos &amp; favicons</button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+</div>
+
+        </div>
+
+        <div class="bottom-bar">
+          <div class="bottom-bar-inner">
+            <button class="link-btn">Discard changes</button>
+            <button class="btn-primary">Apply changes</button>
+          </div>
+        </div>
+
+        <div class="slideout" id="wl-logo-slideout">
+          <div class="so-hd">
+            <span class="so-hd-title">Logos &amp; favicons</span>
+            <button class="so-close" onclick="closeLogoSlideoutWL()"><svg class="icon" style="font-size:13px"><use href="#i-x"/></svg></button>
+          </div>
+          <div class="so-body">
+            <div class="upload-grp">
+              <div class="upload-lbl">Logo — light mode</div>
+              <div class="upload-sub">Shown on light backgrounds.</div>
+              <div class="upload-zone">
+                <svg class="icon" aria-hidden="true"><use href="#i-cloud-upload"/></svg>
+                <div class="upload-zone-text">Drag &amp; drop or click to upload</div>
+                <div class="upload-meta">.png, .jpg, .jpeg — max 500 KB</div>
+              </div>
+            </div>
+            <div class="upload-grp">
+              <div class="upload-lbl">Logo — dark mode</div>
+              <div class="upload-sub">Shown on dark backgrounds.</div>
+              <div class="upload-zone">
+                <svg class="icon" aria-hidden="true"><use href="#i-cloud-upload"/></svg>
+                <div class="upload-zone-text">Drag &amp; drop or click to upload</div>
+                <div class="upload-meta">.png, .jpg, .jpeg — max 500 KB</div>
+              </div>
+            </div>
+            <div class="upload-grp">
+              <div class="upload-lbl">Favicon — light mode</div>
+              <div class="upload-sub">Browser tab icon on light themes.</div>
+              <div class="upload-zone">
+                <svg class="icon" aria-hidden="true"><use href="#i-cloud-upload"/></svg>
+                <div class="upload-zone-text">Drag &amp; drop or click to upload</div>
+                <div class="upload-meta">.png, .ico — max 100 KB</div>
+              </div>
+            </div>
+            <div class="upload-grp">
+              <div class="upload-lbl">Favicon — dark mode</div>
+              <div class="upload-sub">Browser tab icon on dark themes.</div>
+              <div class="upload-zone">
+                <svg class="icon" aria-hidden="true"><use href="#i-cloud-upload"/></svg>
+                <div class="upload-zone-text">Drag &amp; drop or click to upload</div>
+                <div class="upload-meta">.png, .ico — max 100 KB</div>
+              </div>
+            </div>
+          </div>
+          <div class="so-footer">
+            <button class="btn-outline" onclick="closeLogoSlideoutWL()">Cancel</button>
+            <button class="btn-primary" onclick="closeLogoSlideoutWL()">Save</button>
+          </div>
+        </div>
+<div class="slideout" id="ck-logo-slideout">
+          <div class="so-hd">
+            <span class="so-hd-title">Logos &amp; favicons</span>
+            <button class="so-close" onclick="closeLogoSlideoutCK()"><svg class="icon" style="font-size:13px"><use href="#i-x"/></svg></button>
+          </div>
+          <div class="so-body">
+            <div class="upload-grp">
+              <div class="upload-lbl">Logo — light mode</div>
+              <div class="upload-sub">Shown on light backgrounds.</div>
+              <div class="upload-zone">
+                <svg class="icon" aria-hidden="true"><use href="#i-cloud-upload"/></svg>
+                <div class="upload-zone-text">Drag &amp; drop or click to upload</div>
+                <div class="upload-meta">.png, .jpg, .jpeg — max 500 KB</div>
+              </div>
+            </div>
+            <div class="upload-grp">
+              <div class="upload-lbl">Logo — dark mode</div>
+              <div class="upload-sub">Shown on dark backgrounds.</div>
+              <div class="upload-zone">
+                <svg class="icon" aria-hidden="true"><use href="#i-cloud-upload"/></svg>
+                <div class="upload-zone-text">Drag &amp; drop or click to upload</div>
+                <div class="upload-meta">.png, .jpg, .jpeg — max 500 KB</div>
+              </div>
+            </div>
+            <div class="upload-grp">
+              <div class="upload-lbl">Favicon — light mode</div>
+              <div class="upload-sub">Browser tab icon on light themes.</div>
+              <div class="upload-zone">
+                <svg class="icon" aria-hidden="true"><use href="#i-cloud-upload"/></svg>
+                <div class="upload-zone-text">Drag &amp; drop or click to upload</div>
+                <div class="upload-meta">.png, .ico — max 100 KB</div>
+              </div>
+            </div>
+            <div class="upload-grp">
+              <div class="upload-lbl">Favicon — dark mode</div>
+              <div class="upload-sub">Browser tab icon on dark themes.</div>
+              <div class="upload-zone">
+                <svg class="icon" aria-hidden="true"><use href="#i-cloud-upload"/></svg>
+                <div class="upload-zone-text">Drag &amp; drop or click to upload</div>
+                <div class="upload-meta">.png, .ico — max 100 KB</div>
+              </div>
+            </div>
+          </div>
+          <div class="so-footer">
+            <button class="btn-outline" onclick="closeLogoSlideoutCK()">Cancel</button>
+            <button class="btn-primary" onclick="closeLogoSlideoutCK()">Save</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="brand-css-generator.js"></script>
+<script src="brand-live-preview.js"></script>
+<script>
+function switchMode(mode){
+  document.getElementById('mode-wl').style.display = mode==='wl' ? '' : 'none';
+  document.getElementById('mode-ck').style.display = mode==='ck' ? '' : 'none';
+  document.querySelectorAll('.mode-switch-btn').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-mode')===mode);
+  });
+}
+
+(function(){
+var root=document.getElementById('mode-wl');
+
+root.querySelectorAll('.preview-tab').forEach(function(tab){
+  tab.addEventListener('click',function(){
+    root.querySelectorAll('.preview-tab').forEach(function(t){t.classList.remove('active');});
+    root.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active');});
+    tab.classList.add('active');
+    document.getElementById('wl-tab-'+tab.getAttribute('data-tab')).classList.add('active');
+  });
+});
+
+window.openLogoSlideoutWL=function(){ document.getElementById('wl-logo-slideout').classList.add('open'); };
+window.closeLogoSlideoutWL=function(){ document.getElementById('wl-logo-slideout').classList.remove('open'); };
+
+function wireColorPairWL(colorId,hexId){
+  var colorEl=document.getElementById(colorId);
+  var hexEl=document.getElementById(hexId);
+  colorEl.addEventListener('input',function(){ hexEl.value=this.value.toUpperCase(); });
+  hexEl.addEventListener('change',function(){
+    if(/^#?[0-9a-fA-F]{6}$/.test(this.value)){
+      var v=this.value.startsWith('#')?this.value:'#'+this.value;
+      colorEl.value=v; this.value=v.toUpperCase();
+    }
+  });
+  return { color:colorEl, hex:hexEl };
+}
+
+var pLight=wireColorPairWL('wl-c-brand-light','wl-c-brand-light-hex');
+var pDark=wireColorPairWL('wl-c-brand-dark','wl-c-brand-dark-hex');
+var pSuccess=wireColorPairWL('wl-c-success','wl-c-success-hex');
+var pWarning=wireColorPairWL('wl-c-warning','wl-c-warning-hex');
+var pDanger=wireColorPairWL('wl-c-danger','wl-c-danger-hex');
+var pInfo=wireColorPairWL('wl-c-info','wl-c-info-hex');
+var lightHex=pLight.hex, darkHex=pDark.hex;
+var successHex=pSuccess.hex, warningHex=pWarning.hex, dangerHex=pDanger.hex, infoHex=pInfo.hex;
+
+document.getElementById('wl-c-radius').addEventListener('input',function(){
+  document.getElementById('wl-c-radius-val').textContent=this.value+'px';
+});
+
+var DEFAULT_ROLE_COLORS_WL={
+  neutral:'#6B7280', error:'#DC2626', link:'#2563EB', focus:'#2563EB'
+};
+
+var previewWL=initBrandLivePreview({
+  readInput:function(){
+    return {
+      brandName:'NorthPeak Financial',
+      colors:Object.assign({
+        'brand-light':lightHex.value,
+        'brand-dark':darkHex.value,
+        'success':successHex.value,
+        'warning':warningHex.value,
+        'danger':dangerHex.value,
+        'info':infoHex.value
+      },DEFAULT_ROLE_COLORS_WL),
+      fontFamily:document.getElementById('wl-c-font').value,
+      radius:Number(document.getElementById('wl-c-radius').value)
+    };
+  },
+  previewRoot:document.getElementById('wl-brand-preview-root'),
+  inputs:root.querySelectorAll('.brand-input, #wl-c-font'),
+  debounceMs:0,
+  onError:function(err){ console.warn('Brand CSS generation skipped (whitelabel mode):',err.message); }
+});
+
+var previewRootElWL=document.getElementById('wl-brand-preview-root');
+var fontSelectWL=document.getElementById('wl-c-font');
+function applyPreviewFontWL(){ previewRootElWL.style.fontFamily=fontSelectWL.value; }
+fontSelectWL.addEventListener('change',applyPreviewFontWL);
+fontSelectWL.addEventListener('input',applyPreviewFontWL);
+applyPreviewFontWL();
+
+root.querySelectorAll('.brand-input, #wl-c-font').forEach(function(el){
+  el.addEventListener('change',previewWL.refresh);
+  el.addEventListener('click',previewWL.refresh);
+});
+})();
+
+(function(){
+var root=document.getElementById('mode-ck');
+
+window.toggleAccSection=function(hd){
+  hd.classList.toggle('closed');
+  hd.nextElementSibling.classList.toggle('closed');
+};
+
+function applyTabScopeCK(activeTab){
+  root.querySelectorAll('.tab-scope').forEach(function(el){
+    el.classList.toggle('tab-scope-visible', el.getAttribute('data-scope')===activeTab);
+  });
+}
+
+root.querySelectorAll('.preview-tab').forEach(function(tab){
+  tab.addEventListener('click',function(){
+    root.querySelectorAll('.preview-tab').forEach(function(t){t.classList.remove('active');});
+    root.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active');});
+    tab.classList.add('active');
+    var activeTab=tab.getAttribute('data-tab');
+    document.getElementById('ck-tab-'+activeTab).classList.add('active');
+    applyTabScopeCK(activeTab);
+  });
+});
+applyTabScopeCK('components');
+
+window.openLogoSlideoutCK=function(){ document.getElementById('ck-logo-slideout').classList.add('open'); };
+window.closeLogoSlideoutCK=function(){ document.getElementById('ck-logo-slideout').classList.remove('open'); };
+
+function wireColorPairCK(colorId,hexId){
+  var colorEl=document.getElementById(colorId);
+  var hexEl=document.getElementById(hexId);
+  colorEl.addEventListener('input',function(){ hexEl.value=this.value.toUpperCase(); });
+  hexEl.addEventListener('change',function(){
+    if(/^#?[0-9a-fA-F]{6}$/.test(this.value)){
+      var v=this.value.startsWith('#')?this.value:'#'+this.value;
+      colorEl.value=v; this.value=v.toUpperCase();
+    }
+  });
+  return { color:colorEl, hex:hexEl };
+}
+
+var pLight=wireColorPairCK('ck-c-brand-light','ck-c-brand-light-hex');
+var pDark=wireColorPairCK('ck-c-brand-dark','ck-c-brand-dark-hex');
+var pSuccess=wireColorPairCK('ck-c-success','ck-c-success-hex');
+var pWarning=wireColorPairCK('ck-c-warning','ck-c-warning-hex');
+var pDanger=wireColorPairCK('ck-c-danger','ck-c-danger-hex');
+var pInfo=wireColorPairCK('ck-c-info','ck-c-info-hex');
+var lightHex=pLight.hex, darkHex=pDark.hex;
+var successHex=pSuccess.hex, warningHex=pWarning.hex, dangerHex=pDanger.hex, infoHex=pInfo.hex;
+
+document.getElementById('ck-c-radius').addEventListener('input',function(){
+  document.getElementById('ck-c-radius-val').textContent=this.value+'px';
+});
+
+var DEFAULT_ROLE_COLORS_CK={
+  neutral:'#6B7280', error:'#DC2626', link:'#2563EB', focus:'#2563EB'
+};
+
+var previewCK=initBrandLivePreview({
+  readInput:function(){
+    return {
+      brandName:'NorthPeak Financial',
+      colors:Object.assign({
+        'brand-light':lightHex.value,
+        'brand-dark':darkHex.value,
+        'success':successHex.value,
+        'warning':warningHex.value,
+        'danger':dangerHex.value,
+        'info':infoHex.value
+      },DEFAULT_ROLE_COLORS_CK),
+      fontFamily:document.getElementById('ck-c-font').value,
+      radius:Number(document.getElementById('ck-c-radius').value)
+    };
+  },
+  previewRoot:document.getElementById('ck-brand-preview-root'),
+  inputs:root.querySelectorAll('.brand-input, #ck-c-font'),
+  debounceMs:0,
+  onError:function(err){ console.warn('Brand CSS generation skipped (checkout mode):',err.message); }
+});
+
+var previewRootElCK=document.getElementById('ck-brand-preview-root');
+var fontSelectCK=document.getElementById('ck-c-font');
+function applyPreviewFontCK(){ previewRootElCK.style.fontFamily=fontSelectCK.value; }
+fontSelectCK.addEventListener('change',applyPreviewFontCK);
+fontSelectCK.addEventListener('input',applyPreviewFontCK);
+applyPreviewFontCK();
+
+var pBg=wireColorPairCK('ck-c-checkout-bg','ck-c-checkout-bg-hex');
+var checkoutBgHex=pBg.hex;
+var checkoutTabEl=document.getElementById('ck-tab-page');
+function applyCheckoutBg(){ checkoutTabEl.style.backgroundColor=checkoutBgHex.value; }
+document.getElementById('ck-c-checkout-bg').addEventListener('input',applyCheckoutBg);
+checkoutBgHex.addEventListener('input',applyCheckoutBg);
+checkoutBgHex.addEventListener('change',applyCheckoutBg);
+applyCheckoutBg();
+
+root.querySelectorAll('.brand-input, #ck-c-font').forEach(function(el){
+  el.addEventListener('change',previewCK.refresh);
+  el.addEventListener('click',previewCK.refresh);
+});
+})();
+
+</script>
+</body>
+</html>
