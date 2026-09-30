@@ -623,7 +623,21 @@ body{background:#F3F4F6;min-height:100vh;padding:24px;display:flex;flex-directio
                     <input type="text" class="hex-input brand-input" id="wl-c-info-hex" value="#0EA5E9">
                   </div>
                 </div>
-                <div class="helper-text">Error, neutral, link and focus colors use Verifone's default palette. Contact support to request custom values for those roles.</div>
+                <div class="field-row">
+                  <span class="field-lbl">Link</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="wl-c-link" value="#2563eb">
+                    <input type="text" class="hex-input brand-input" id="wl-c-link-hex" value="#2563EB">
+                  </div>
+                </div>
+                <div class="field-row">
+                  <span class="field-lbl">Focus</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="wl-c-focus" value="#2563eb">
+                    <input type="text" class="hex-input brand-input" id="wl-c-focus-hex" value="#2563EB">
+                  </div>
+                </div>
+                <div class="helper-text">Error and neutral colors use Verifone's default palette. Contact support to request custom values for those roles.</div>
                 </div>
               </div>
 
@@ -897,7 +911,21 @@ body{background:#F3F4F6;min-height:100vh;padding:24px;display:flex;flex-directio
                     <input type="text" class="hex-input brand-input" id="ck-c-info-hex" value="#0EA5E9">
                   </div>
                 </div>
-                <div class="helper-text">Error, neutral, link and focus colors use Verifone's default palette. Contact support to request custom values for those roles.</div>
+                <div class="field-row">
+                  <span class="field-lbl">Link</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="ck-c-link" value="#2563eb">
+                    <input type="text" class="hex-input brand-input" id="ck-c-link-hex" value="#2563EB">
+                  </div>
+                </div>
+                <div class="field-row">
+                  <span class="field-lbl">Focus</span>
+                  <div class="color-field">
+                    <input type="color" class="color-swatch brand-input" id="ck-c-focus" value="#2563eb">
+                    <input type="text" class="hex-input brand-input" id="ck-c-focus-hex" value="#2563EB">
+                  </div>
+                </div>
+                <div class="helper-text">Error and neutral colors use Verifone's default palette. Contact support to request custom values for those roles.</div>
                 </div>
               </div>
 
@@ -1067,8 +1095,281 @@ body{background:#F3F4F6;min-height:100vh;padding:24px;display:flex;flex-directio
   </div>
 </div>
 
-<script src="brand-css-generator.js"></script>
-<script src="brand-live-preview.js"></script>
+<script>
+/**
+ * Brand CSS Generator
+ *
+ * Generates a brand token override stylesheet (brand-{name}.css) from the same
+ * inputs as the Verifone Brand Token Generator Figma plugin:
+ *
+ *   - brandName   string  e.g. "Verifone"
+ *   - colors      object  10 hex values keyed by role:
+ *                         brand-light, brand-dark, neutral, error, success,
+ *                         warning, danger, info, link, focus
+ *   - fontFamily  string  (kept as a comment in the CSS, per foundation inherit)
+ *   - radius      number  border radius in px
+ *
+ * Palette math (OKLCH conversions, tint/shade curves, hue-drift correction)
+ * is ported verbatim from the plugin's ui.html so both tools produce
+ * identical ramps.
+ *
+ * Usage (browser):
+ *   const { filename, css } = generateBrandCss({
+ *     brandName: "Verifone",
+ *     colors: { "brand-light": "#004aef", ... },
+ *     fontFamily: "Inter",
+ *     radius: 999
+ *   });
+ *   downloadBrandCss({ filename, css }); // triggers a file download
+ */
+
+/* ── Color conversions (ported verbatim from ui.html) ── */
+function hexToRgb(hex) { const h = hex.replace("#", ""); const n = parseInt(h, 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+function toLinear(v) { v /= 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }
+function fromLinear(v) { v = Math.max(0, Math.min(1, v)); return Math.round((v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - 0.055) * 255); }
+function rgbToXyz([r, g, b]) { const l = toLinear(r), m = toLinear(g), s = toLinear(b); return [l * 0.4124564 + m * 0.3575761 + s * 0.1804375, l * 0.2126729 + m * 0.7151522 + s * 0.0721750, l * 0.0193339 + m * 0.1191920 + s * 0.9503041]; }
+function xyzToOklab([x, y, z]) { const l = Math.cbrt(0.8189330101 * x + 0.3618667424 * y - 0.1288597137 * z), m = Math.cbrt(0.0329845436 * x + 0.9293118715 * y + 0.0361456387 * z), s = Math.cbrt(0.0482003018 * x + 0.2643662691 * y + 0.6338517070 * z); return [0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s, 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s]; }
+function oklabToXyz([L, a, b]) { const l = Math.pow(L + 0.3963377774 * a + 0.2158037573 * b, 3), m = Math.pow(L - 0.1055613458 * a - 0.0638541728 * b, 3), s = Math.pow(L - 0.0894841775 * a - 1.2914855480 * b, 3); return [l * 1.2270138511 + m * -0.5577999807 + s * 0.2812561490, l * -0.0405801784 + m * 1.1122568696 + s * -0.0716766787, l * -0.0763812845 + m * -0.4214819784 + s * 1.5861632204]; }
+function xyzToRgb([x, y, z]) { return [fromLinear(3.2404542 * x - 1.5371385 * y - 0.4985314 * z), fromLinear(-0.9692660 * x + 1.8760108 * y + 0.0415560 * z), fromLinear(0.0556434 * x - 0.2040259 * y + 1.0572252 * z)]; }
+function hexToOklab(hex) { return xyzToOklab(rgbToXyz(hexToRgb(hex))); }
+function oklabToHex([L, a, b]) { const [r, g, bl] = xyzToRgb(oklabToXyz([L, a, b])); return "#" + [r, g, bl].map(v => Math.max(0, Math.min(255, v)).toString(16).padStart(2, "0")).join(""); }
+function toLCH([L, a, b]) { const C = Math.sqrt(a * a + b * b), H = Math.atan2(b, a) * 180 / Math.PI; return [L, C, H < 0 ? H + 360 : H]; }
+function fromLCH([L, C, H]) { const hr = H * Math.PI / 180; return [L, C * Math.cos(hr), C * Math.sin(hr)]; }
+function hexToLCH(hex) { return toLCH(hexToOklab(hex)); }
+function lchToHex(lch) { return oklabToHex(fromLCH(lch)); }
+function getLuminance(hex) { const [r, g, b] = hexToRgb(hex); return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b); }
+
+/* on-500: highest-contrast choice between black and white */
+function onColor(hex) { const lum = getLuminance(hex); return (1.05 / (lum + 0.05)) > ((lum + 0.05) / 0.05) ? "#ffffff" : "#000000"; }
+
+/* ── Palette curves (ported verbatim from ui.html) ── */
+const TINT_STOPS = { "400": 0.11, "300": 0.30, "200": 0.53, "150": 0.71, "100": 0.84, "050": 0.93 };
+const TINT_CHROMA = { "400": 0.84, "300": 0.65, "200": 0.52, "150": 0.36, "100": 0.20, "050": 0.06 };
+const SHADE_STOPS = { "600": 0.11, "700": 0.24, "800": 0.40, "900": 0.57, "1000": 0.71, "1100": 0.83, "1200": 0.93 };
+const SHADE_CHROMA = { "600": 0.97, "700": 0.91, "800": 0.80, "900": 0.65, "1000": 0.48, "1100": 0.30, "1200": 0.14 };
+const WHITE_L = 0.998, WHITE_C_FACTOR = 0.008, BLACK_L = 0.028, BLACK_C_FACTOR = 0.05;
+
+function hueCorrection(baseH, targetL, baseL, baseC) {
+  if (baseC < 0.035) return baseH;
+  const delta = targetL - baseL;
+  const dBlue = Math.min(Math.abs(baseH - 250), 360 - Math.abs(baseH - 250));
+  if (dBlue < 40) { const s = (1 - dBlue / 40) * 0.5; return baseH + (delta > 0 ? -delta * s * 10 : -delta * s * 6); }
+  const dOrange = Math.min(Math.abs(baseH - 35), 360 - Math.abs(baseH - 35));
+  if (dOrange < 30) { const s = (1 - dOrange / 30) * 0.4; return baseH + (delta < 0 ? -delta * s * 5 : -delta * s * 3); }
+  const dYellow = Math.min(Math.abs(baseH - 98), 360 - Math.abs(baseH - 98));
+  if (dYellow < 18) { const s = (1 - dYellow / 18) * 0.35; return baseH + (delta < 0 ? -delta * s * 4 : 0); }
+  const dTeal = Math.min(Math.abs(baseH - 192), 360 - Math.abs(baseH - 192));
+  if (dTeal < 25) { const s = (1 - dTeal / 25) * 0.2; return baseH + (delta > 0 ? -delta * s * 4 : 0); }
+  return baseH;
+}
+
+function generatePalette(hex) {
+  const clean = (hex.startsWith("#") ? hex : "#" + hex).toLowerCase();
+  const [baseL, baseC, baseH] = hexToLCH(clean);
+  const headroom = WHITE_L - baseL, footroom = baseL - BLACK_L;
+  const steps = {};
+  for (const [step, pos] of Object.entries(TINT_STOPS)) {
+    const targetL = baseL + headroom * pos;
+    const C = baseC * TINT_CHROMA[step] + baseC * WHITE_C_FACTOR * (1 - TINT_CHROMA[step]);
+    steps[step] = lchToHex([targetL, Math.max(0, C), hueCorrection(baseH, targetL, baseL, baseC)]);
+  }
+  steps["500"] = clean;
+  for (const [step, pos] of Object.entries(SHADE_STOPS)) {
+    const targetL = baseL - footroom * pos;
+    const C = baseC * SHADE_CHROMA[step] + baseC * BLACK_C_FACTOR * (1 - SHADE_CHROMA[step]);
+    steps[step] = lchToHex([targetL, Math.max(0, C), hueCorrection(baseH, targetL, baseL, baseC)]);
+  }
+  return steps;
+}
+
+/* ── CSS output ── */
+const COLOR_ROLES = ["brand-light", "brand-dark", "neutral", "error", "success", "warning", "danger", "info", "link", "focus"];
+/* Declaration order matches the reference file: 100→1200, then 050, on-500, alphas */
+const CSS_STEP_ORDER = ["100", "150", "200", "300", "400", "500", "600", "700", "800", "900", "1000", "1100", "1200", "050"];
+/* Explicit array: numeric-like object keys ("16","24"…) get reordered by JS engines */
+const ALPHA_STEPS = [["00", 0], ["08", 0.08], ["16", 0.16], ["24", 0.24], ["32", 0.32], ["48", 0.48], ["64", 0.64]];
+
+function alphaHex(alpha) {
+  return Math.round(alpha * 255).toString(16).padStart(2, "0");
+}
+
+function slugify(name) {
+  return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+const HEX_RE = /^#?[0-9a-fA-F]{6}$/;
+
+/**
+ * Generate the brand CSS.
+ * @param {{brandName: string, colors: Record<string,string>, fontFamily?: string, radius: number}} input
+ * @returns {{filename: string, css: string}}
+ */
+function generateBrandCss(input) {
+  const brandName = String(input.brandName || "").trim();
+  if (!brandName) throw new Error("Brand name is required.");
+
+  const radius = Number(input.radius);
+  if (Number.isNaN(radius)) throw new Error("Border radius must be a number.");
+
+  const colors = input.colors || {};
+  for (const role of COLOR_ROLES) {
+    const val = String(colors[role] || "").trim();
+    if (!HEX_RE.test(val)) throw new Error('Invalid or missing hex for "' + role + '".');
+  }
+
+  const slug = slugify(brandName);
+  const lines = [];
+  lines.push("/**");
+  lines.push(" * Brand: " + slug);
+  lines.push(" * Brand-specific token overrides");
+  lines.push(" */");
+  lines.push("");
+  lines.push('[data-brand="' + slug + '"] {');
+
+  for (const role of COLOR_ROLES) {
+    const raw = String(colors[role]).trim();
+    const clean = (raw.startsWith("#") ? raw : "#" + raw).toLowerCase();
+    const palette = generatePalette(clean);
+    const base = palette["500"];
+
+    for (const step of CSS_STEP_ORDER) {
+      lines.push("  --color-" + role + "-" + step + ": " + palette[step] + ";");
+    }
+    lines.push("  --color-" + role + "-on-500: " + onColor(base) + ";");
+    for (const [key, alpha] of ALPHA_STEPS) {
+      lines.push("  --color-" + role + "-500-alpha-" + key + ": " + base + alphaHex(alpha) + ";");
+    }
+    if (role === "neutral") {
+      lines.push("  --color-neutral-white: #ffffff;");
+      lines.push("  --color-neutral-black: #000000;");
+    }
+  }
+
+  lines.push("  /* --typography-font-family: inherit from foundation */");
+  lines.push("  --image-brand: " + brandName + ";");
+  lines.push("  --radius-branded-component: " + radius + "px;");
+  lines.push("  --radius-branded-component-focusring: " + (radius + 4) + "px;");
+  lines.push("");
+  lines.push("}");
+  lines.push("");
+
+  return { filename: "brand-" + slug + ".css", css: lines.join("\n") };
+}
+
+/** Trigger a browser download of the generated CSS. */
+function downloadBrandCss({ filename, css }) {
+  const blob = new Blob([css], { type: "text/css" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* Expose for plain <script> usage and CommonJS (tests) */
+if (typeof window !== "undefined") {
+  window.generateBrandCss = generateBrandCss;
+  window.downloadBrandCss = downloadBrandCss;
+}
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { generateBrandCss, downloadBrandCss, generatePalette, onColor };
+}
+
+</script>
+<script>
+/**
+ * Brand Live Preview
+ *
+ * Companion to brand-css-generator.js. Wires white-label input fields to
+ * generateBrandCss() and injects the result into a <style> tag so preview
+ * components wrapped in [data-brand="{slug}"] restyle in real time.
+ *
+ * Expects generateBrandCss() to be loaded first (same <script> pattern).
+ *
+ * Usage:
+ *   const preview = initBrandLivePreview({
+ *     readInput: () => ({
+ *       brandName: nameField.value,
+ *       colors: {
+ *         "brand-light": brandLightField.value,
+ *         // ...all 10 roles
+ *       },
+ *       fontFamily: fontField.value,
+ *       radius: Number(radiusField.value)
+ *     }),
+ *     previewRoot: document.querySelector("#preview"),  // gets data-brand set
+ *     inputs: document.querySelectorAll("#brand-form input"),
+ *     onError: (err) => { / * optional: flag invalid field * / }
+ *   });
+ *
+ *   // Export button reuses the exact CSS currently previewed:
+ *   exportBtn.onclick = () => downloadBrandCss(preview.current());
+ */
+function initBrandLivePreview({ readInput, previewRoot, inputs, onError, debounceMs = 80 }) {
+  const styleEl = document.createElement("style");
+  initBrandLivePreview._counter = (initBrandLivePreview._counter || 0) + 1;
+  styleEl.id = "brand-preview-css-" + initBrandLivePreview._counter;
+  document.head.appendChild(styleEl);
+
+  let last = null;   // last successfully generated { filename, css }
+  let timer = null;
+
+  function apply() {
+    let result;
+    try {
+      result = generateBrandCss(readInput());
+    } catch (err) {
+      // Partial hex mid-typing, empty name, etc. Keep the last valid CSS
+      // on screen instead of blanking the preview.
+      if (onError) onError(err);
+      return;
+    }
+    last = result;
+    styleEl.textContent = result.css;
+
+    // Keep the preview wrapper attached to the (possibly renamed) brand.
+    if (previewRoot) {
+      const slug = result.filename.replace(/^brand-/, "").replace(/\.css$/, "");
+      previewRoot.setAttribute("data-brand", slug);
+    }
+  }
+
+  function scheduled() {
+    clearTimeout(timer);
+    timer = setTimeout(apply, debounceMs);
+  }
+
+  for (const el of inputs) {
+    el.addEventListener("input", scheduled);
+  }
+
+  apply(); // initial render from current field values
+
+  return {
+    /** Latest valid { filename, css } — hand this straight to downloadBrandCss. */
+    current: () => last,
+    /** Force a regeneration (e.g. after programmatically setting fields). */
+    refresh: apply,
+    /** Detach listeners and remove the injected stylesheet. */
+    destroy: () => {
+      clearTimeout(timer);
+      for (const el of inputs) el.removeEventListener("input", scheduled);
+      styleEl.remove();
+    }
+  };
+}
+
+if (typeof window !== "undefined") {
+  window.initBrandLivePreview = initBrandLivePreview;
+}
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { initBrandLivePreview };
+}
+
+</script>
 <script>
 function switchMode(mode){
   document.getElementById('mode-wl').style.display = mode==='wl' ? '' : 'none';
@@ -1112,28 +1413,33 @@ var pSuccess=wireColorPairWL('wl-c-success','wl-c-success-hex');
 var pWarning=wireColorPairWL('wl-c-warning','wl-c-warning-hex');
 var pDanger=wireColorPairWL('wl-c-danger','wl-c-danger-hex');
 var pInfo=wireColorPairWL('wl-c-info','wl-c-info-hex');
+var pLinkClr=wireColorPairWL('wl-c-link','wl-c-link-hex');
+var pFocusClr=wireColorPairWL('wl-c-focus','wl-c-focus-hex');
 var lightHex=pLight.hex, darkHex=pDark.hex;
 var successHex=pSuccess.hex, warningHex=pWarning.hex, dangerHex=pDanger.hex, infoHex=pInfo.hex;
+var linkHex=pLinkClr.hex, focusHex=pFocusClr.hex;
 
 document.getElementById('wl-c-radius').addEventListener('input',function(){
   document.getElementById('wl-c-radius-val').textContent=this.value+'px';
 });
 
 var DEFAULT_ROLE_COLORS_WL={
-  neutral:'#6B7280', error:'#DC2626', link:'#2563EB', focus:'#2563EB'
+  neutral:'#6B7280', error:'#DC2626'
 };
 
 var previewWL=initBrandLivePreview({
   readInput:function(){
     return {
-      brandName:'NorthPeak Financial',
+      brandName:'NorthPeak Financial WL',
       colors:Object.assign({
         'brand-light':lightHex.value,
         'brand-dark':darkHex.value,
         'success':successHex.value,
         'warning':warningHex.value,
         'danger':dangerHex.value,
-        'info':infoHex.value
+        'info':infoHex.value,
+        'link':linkHex.value,
+        'focus':focusHex.value
       },DEFAULT_ROLE_COLORS_WL),
       fontFamily:document.getElementById('wl-c-font').value,
       radius:Number(document.getElementById('wl-c-radius').value)
@@ -1206,28 +1512,33 @@ var pSuccess=wireColorPairCK('ck-c-success','ck-c-success-hex');
 var pWarning=wireColorPairCK('ck-c-warning','ck-c-warning-hex');
 var pDanger=wireColorPairCK('ck-c-danger','ck-c-danger-hex');
 var pInfo=wireColorPairCK('ck-c-info','ck-c-info-hex');
+var pLinkClr=wireColorPairCK('ck-c-link','ck-c-link-hex');
+var pFocusClr=wireColorPairCK('ck-c-focus','ck-c-focus-hex');
 var lightHex=pLight.hex, darkHex=pDark.hex;
 var successHex=pSuccess.hex, warningHex=pWarning.hex, dangerHex=pDanger.hex, infoHex=pInfo.hex;
+var linkHex=pLinkClr.hex, focusHex=pFocusClr.hex;
 
 document.getElementById('ck-c-radius').addEventListener('input',function(){
   document.getElementById('ck-c-radius-val').textContent=this.value+'px';
 });
 
 var DEFAULT_ROLE_COLORS_CK={
-  neutral:'#6B7280', error:'#DC2626', link:'#2563EB', focus:'#2563EB'
+  neutral:'#6B7280', error:'#DC2626'
 };
 
 var previewCK=initBrandLivePreview({
   readInput:function(){
     return {
-      brandName:'NorthPeak Financial',
+      brandName:'NorthPeak Financial CK',
       colors:Object.assign({
         'brand-light':lightHex.value,
         'brand-dark':darkHex.value,
         'success':successHex.value,
         'warning':warningHex.value,
         'danger':dangerHex.value,
-        'info':infoHex.value
+        'info':infoHex.value,
+        'link':linkHex.value,
+        'focus':focusHex.value
       },DEFAULT_ROLE_COLORS_CK),
       fontFamily:document.getElementById('ck-c-font').value,
       radius:Number(document.getElementById('ck-c-radius').value)
